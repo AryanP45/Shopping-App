@@ -118,5 +118,31 @@ public class OrderController {
      * @param orderId The ID of the order.
      * @return ResponseEntity containing order details and transaction log.
      */
+    @GetMapping("/{userId}/orders/{orderId}")
+    public ResponseEntity<?> getOrdersByUserId(@PathVariable Long userId, @PathVariable Long orderId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+
+        List<Order> orders = user.getOrders();
+        
+        // Find order from OrderList and return its info with transactions log
+        for (Order order : orders) {
+            if (order.getId() == orderId) {
+                List<OrderAndTransactionDto> orderAndTransactionDtos = new ArrayList<>();
+                List<Transaction> transactions = order.getTransactions();
+
+                for (Transaction t : transactions) {
+                    orderAndTransactionDtos.add(new OrderAndTransactionDto(orderId, order.getAmount(), order.getDate(),
+                            order.getCouponName(), t.getTransactionId(),
+                            t.getStatus().equals(TransactionStatus.Successful) ? TransactionStatus.Successful.name()
+                                    : TransactionStatus.failed.name()));
+                }
+
+                return ResponseEntity.ok(orderAndTransactionDtos);
+            }
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 }
