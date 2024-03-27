@@ -21,6 +21,17 @@ public class CouponController {
 	
 	private final CouponRepository couponRepository;
 	
+	/**
+	 * Retrieves all coupons.
+	 * 
+	 * @return ResponseEntity containing the list of coupons.
+	 */
+	@GetMapping("/fetchCoupons")
+	public ResponseEntity<List<Coupon>> getAllCoupons(){			
+		List<Coupon> coupons = couponRepository.findAll();
+		System.out.println("Getting all coupons");
+		return ResponseEntity.ok(coupons);
+	}
 	
 	/**
 	 * Adds a new coupon.
