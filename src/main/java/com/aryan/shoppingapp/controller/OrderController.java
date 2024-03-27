@@ -96,5 +96,27 @@ public class OrderController {
                 .ok(new OrderDto(savedOrder.getId(), savedOrder.getId(), quantity, finalDiscountedAmount, couponName));
     }
 
+    /**
+     * Retrieves all orders of a user.
+     * 
+     * @param userId The ID of the user.
+     * @return ResponseEntity containing the list of orders.
+     */
+    @GetMapping("/{userId}/orders")
+    public ResponseEntity<?> getAllOrdersOfUser(@PathVariable Long userId) {
+        User user = userRepository.findById(userId).orElse(null);
+        if (user == null)
+            return ResponseEntity.notFound().build();
+        List<Order> orders = user.getOrders();
+        return ResponseEntity.ok(orders);
+    }
+
+    /**
+     * Retrieves orders with related transactions for a specific user.
+     * 
+     * @param userId  The ID of the user.
+     * @param orderId The ID of the order.
+     * @return ResponseEntity containing order details and transaction log.
+     */
 
 }
